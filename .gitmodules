@@ -1,9 +1,9 @@
 [submodule "rocksdb"]
 	path = librocksdb_sys/rocksdb
-	url = https://github.com/tikv/rocksdb.git
-	branch = 8.10.tikv
+	url = https://github.com/homeffjy/rocksdb.git
+	branch = s3-poc
 
 [submodule "titan"]
 	path = librocksdb_sys/libtitan_sys/titan
-	url = https://github.com/tikv/titan.git
-	branch = master
+	url = https://github.com/homeffjy/titan.git
+	branch = dev-fjy/port-rocksdb-cloud

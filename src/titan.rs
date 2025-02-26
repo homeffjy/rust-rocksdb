@@ -5,6 +5,7 @@ use crocksdb_ffi::{self, DBCompressionType, DBTitanBlobIndex, DBTitanDBOptions};
 use librocksdb_sys::{ctitandb_encode_blob_index, DBTitanDBBlobRunMode};
 use rocksdb::Cache;
 use std::ops::DerefMut;
+use std::os::raw::{c_char, c_int};
 use std::ptr;
 use std::slice;
 
@@ -147,6 +148,27 @@ impl TitanDBOptions {
         unsafe {
             crocksdb_ffi::ctitandb_options_set_blob_run_mode(self.inner, t);
         }
+    }
+
+    pub fn create_cloud_environment(
+        &mut self,
+        dbname: &str,
+        region: &str,
+        bucket_name: &str,
+    ) -> Result<(), String> {
+        let c_dbname = CString::new(dbname).unwrap();
+        let c_region = CString::new(region).unwrap();
+        let c_bucket = CString::new(bucket_name).unwrap();
+
+        unsafe {
+            crocksdb_ffi::crocksdb_titan_create_cloud_environment(
+                self.inner,
+                c_dbname.as_ptr(),
+                c_region.as_ptr(),
+                c_bucket.as_ptr(),
+            );
+        }
+        Ok(())
     }
 }
 

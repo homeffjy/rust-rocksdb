@@ -2006,7 +2006,7 @@ crocksdb_slicetransform_create(
     unsigned char (*in_range)(void*, const char* key, size_t length),
     const char* (*name)(void*));
 extern C_ROCKSDB_LIBRARY_API crocksdb_slicetransform_t*
-    crocksdb_slicetransform_create_fixed_prefix(size_t);
+crocksdb_slicetransform_create_fixed_prefix(size_t);
 extern C_ROCKSDB_LIBRARY_API crocksdb_slicetransform_t*
 crocksdb_slicetransform_create_noop();
 extern C_ROCKSDB_LIBRARY_API void crocksdb_slicetransform_destroy(
@@ -2669,6 +2669,17 @@ extern C_ROCKSDB_LIBRARY_API crocksdb_t* ctitandb_open_column_families(
     int num_column_families, const char** column_family_names,
     const ctitandb_options_t** titan_column_family_options,
     crocksdb_column_family_handle_t** column_family_handles, char** errptr);
+
+extern C_ROCKSDB_LIBRARY_API crocksdb_t*
+ctitandb_open_column_families_with_cloud(
+    const char* name, const ctitandb_options_t* tdb_options,
+    int num_column_families, const char** column_family_names,
+    const ctitandb_options_t** titan_column_family_options,
+    crocksdb_column_family_handle_t** column_family_handles, char** errptr);
+
+extern C_ROCKSDB_LIBRARY_API void crocksdb_titan_create_cloud_environment(
+    ctitandb_options_t* options, const char* dbname, const char* region,
+    const char* bucket_name, char** errptr);
 
 extern C_ROCKSDB_LIBRARY_API crocksdb_column_family_handle_t*
 ctitandb_create_column_family(
