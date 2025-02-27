@@ -680,15 +680,28 @@ impl DB {
                         ))
                     }
                 } else {
-                    unsafe {
-                        ffi_try!(ctitandb_open_column_families(
-                            db_path,
-                            titan_options,
-                            db_cfs_count,
-                            db_cf_ptrs,
-                            titan_cf_opts,
-                            db_cf_handles
-                        ))
+                    if unsafe { crocksdb_ffi::ctitandb_options_is_cloud_enabled(titan_options) } {
+                        unsafe {
+                            ffi_try!(ctitandb_open_column_families_with_cloud(
+                                db_path,
+                                titan_options,
+                                db_cfs_count,
+                                db_cf_ptrs,
+                                titan_cf_opts,
+                                db_cf_handles
+                            ))
+                        }
+                    } else {
+                        unsafe {
+                            ffi_try!(ctitandb_open_column_families(
+                                db_path,
+                                titan_options,
+                                db_cfs_count,
+                                db_cf_ptrs,
+                                titan_cf_opts,
+                                db_cf_handles
+                            ))
+                        }
                     }
                 }
             } else {

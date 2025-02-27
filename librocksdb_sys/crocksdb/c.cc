@@ -6773,16 +6773,6 @@ crocksdb_t* ctitandb_open_column_families_with_cloud(
   return result;
 }
 
-void crocksdb_titan_create_cloud_environment(ctitandb_options_t* options,
-                                             const char* dbname,
-                                             const char* region,
-                                             const char* bucket_name,
-                                             char** errptr) {
-  SaveError(errptr, rocksdb::titandb::TitanCloudHelper::CreateCloudEnvironment(
-                        options->rep, std::string(dbname), std::string(region),
-                        std::string(bucket_name)));
-}
-
 // Caller should make sure `db` is created from ctitandb_open_column_families.
 //
 // TODO: ctitandb_open_column_family should return a ctitandb_t. Caller can
@@ -6870,6 +6860,20 @@ void ctitandb_options_set_compression_options(ctitandb_options_t* opt,
   opt->rep.blob_file_compression_options.max_dict_bytes = max_dict_bytes;
   opt->rep.blob_file_compression_options.zstd_max_train_bytes =
       zstd_max_train_bytes;
+}
+
+void ctitandb_options_create_cloud_environment(ctitandb_options_t* options,
+                                             const char* dbname,
+                                             const char* region,
+                                             const char* bucket_name,
+                                             char** errptr) {
+  SaveError(errptr, rocksdb::titandb::TitanCloudHelper::CreateCloudEnvironment(
+                        options->rep, std::string(dbname), std::string(region),
+                        std::string(bucket_name)));
+}
+
+unsigned char ctitandb_options_is_cloud_enabled(ctitandb_options_t* options) {
+  return rocksdb::titandb::TitanCloudHelper::IsCloudEnabled(options->rep);
 }
 
 void ctitandb_decode_blob_index(const char* value, size_t value_size,

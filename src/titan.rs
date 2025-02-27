@@ -161,7 +161,7 @@ impl TitanDBOptions {
         let c_bucket = CString::new(bucket_name).unwrap();
 
         unsafe {
-            crocksdb_ffi::crocksdb_titan_create_cloud_environment(
+            crocksdb_ffi::ctitandb_options_create_cloud_environment(
                 self.inner,
                 c_dbname.as_ptr(),
                 c_region.as_ptr(),

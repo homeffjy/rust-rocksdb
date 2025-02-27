@@ -2677,10 +2677,6 @@ ctitandb_open_column_families_with_cloud(
     const ctitandb_options_t** titan_column_family_options,
     crocksdb_column_family_handle_t** column_family_handles, char** errptr);
 
-extern C_ROCKSDB_LIBRARY_API void crocksdb_titan_create_cloud_environment(
-    ctitandb_options_t* options, const char* dbname, const char* region,
-    const char* bucket_name, char** errptr);
-
 extern C_ROCKSDB_LIBRARY_API crocksdb_column_family_handle_t*
 ctitandb_create_column_family(
     crocksdb_t* db, const ctitandb_options_t* titan_column_family_options,
@@ -2736,6 +2732,13 @@ extern C_ROCKSDB_LIBRARY_API void ctitandb_options_set_blob_file_compression(
 extern C_ROCKSDB_LIBRARY_API void ctitandb_options_set_compression_options(
     ctitandb_options_t* opt, int, int, int, int, int);
 
+extern C_ROCKSDB_LIBRARY_API void ctitandb_options_create_cloud_environment(
+    ctitandb_options_t* options, const char* dbname, const char* region,
+    const char* bucket_name, char** errptr);
+
+extern C_ROCKSDB_LIBRARY_API unsigned char ctitandb_options_is_cloud_enabled(
+    ctitandb_options_t* options);
+    
 extern C_ROCKSDB_LIBRARY_API void ctitandb_decode_blob_index(
     const char* value, size_t value_size, ctitandb_blob_index_t* index,
     char** errptr);

@@ -2975,12 +2975,13 @@ extern "C" {
     pub fn ctitandb_options_set_discardable_ratio(opts: *mut DBTitanDBOptions, ratio: f64);
     pub fn ctitandb_options_set_merge_small_file_threshold(opts: *mut DBTitanDBOptions, size: u64);
     pub fn ctitandb_options_set_blob_run_mode(opts: *mut DBTitanDBOptions, t: DBTitanDBBlobRunMode);
-    pub fn crocksdb_titan_create_cloud_environment(
+    pub fn ctitandb_options_create_cloud_environment(
         options: *mut DBTitanDBOptions,
         dbname: *const c_char,
         region: *const c_char,
         bucket_name: *const c_char,
     ) -> *mut c_char;
+    pub fn ctitandb_options_is_cloud_enabled(options: *mut DBTitanDBOptions) -> bool;
 
     pub fn ctitandb_readoptions_set_key_only(opts: *mut DBTitanReadOptions, v: bool);
 

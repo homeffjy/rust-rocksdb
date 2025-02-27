@@ -201,6 +201,113 @@ fn test_titandb() {
 }
 
 #[test]
+fn test_titandb_with_cloud() {
+    let max_value_size = 10;
+
+    let path = tempdir_with_prefix("test_titandb_with_cloud");
+    let tdb_path = path.path().join("titandb");
+    let mut tdb_opts = TitanDBOptions::new();
+    tdb_opts.set_dirname(tdb_path.to_str().unwrap());
+    tdb_opts.set_min_blob_size(max_value_size / 2 + 1);
+    tdb_opts.set_blob_file_compression(DBCompressionType::Zstd);
+    tdb_opts.set_compression_options(-14, 0, 0, 0, 0);
+    tdb_opts.set_disable_background_gc(true);
+    tdb_opts.set_purge_obsolete_files_period(10);
+    tdb_opts.set_level_merge(false);
+    tdb_opts.set_range_merge(false);
+    tdb_opts.set_max_sorted_runs(20);
+
+    let region = "ap-northeast-2";
+    let bucket_name = "test-titandb-with-cloud";
+    tdb_opts
+        .create_cloud_environment(tdb_path.to_str().unwrap(), region, bucket_name)
+        .unwrap();
+
+    let mut opts = DBOptions::new();
+    opts.create_if_missing(true);
+    opts.set_titandb_options(&tdb_opts);
+    let mut cf_opts = ColumnFamilyOptions::new();
+    let f = TitanCollectorFactory::default();
+    cf_opts.set_titandb_options(&tdb_opts);
+    cf_opts.add_table_properties_collector_factory::<TitanCollector, TitanCollectorFactory>(
+        "titan-collector",
+        f,
+    );
+    let mut db = DB::open_cf(
+        opts,
+        path.path().to_str().unwrap(),
+        vec![("default", cf_opts)],
+    )
+    .unwrap();
+
+    let n = 10;
+    let mut fopts = FlushOptions::default();
+    fopts.set_wait(true);
+    for i in 0..n {
+        for size in 0..max_value_size {
+            let k = (i * n + size) as u8;
+            let v = vec![k; (size + 1) as usize];
+            db.put(&[k], &v).unwrap();
+        }
+        db.flush(&fopts).unwrap();
+    }
+
+    let mut cf_opts = ColumnFamilyOptions::new();
+    cf_opts.set_num_levels(4);
+    db.create_cf(("cf1", cf_opts)).unwrap();
+    let cf1 = db.cf_handle("cf1").unwrap();
+    assert_eq!(db.get_options_cf(cf1).get_num_levels(), 4);
+
+    let mut iter = db.iter();
+    iter.seek(SeekKey::Start).unwrap();
+    for i in 0..n {
+        for j in 0..n {
+            let k = (i * n + j) as u8;
+            let v = vec![k; (j + 1) as usize];
+            assert_eq!(db.get(&[k]).unwrap().unwrap(), &v);
+            assert!(iter.valid().unwrap());
+            assert_eq!(iter.key(), &[k]);
+            assert_eq!(iter.value(), v.as_slice());
+            iter.next().unwrap();
+        }
+    }
+
+    let mut readopts = ReadOptions::new();
+    readopts.set_titan_key_only(true);
+    iter = db.iter_opt(readopts);
+    iter.seek(SeekKey::Start).unwrap();
+    for i in 0..n {
+        for j in 0..n {
+            let k = (i * n + j) as u8;
+            let v = vec![k; (j + 1) as usize];
+            assert_eq!(db.get(&[k]).unwrap().unwrap(), &v);
+            assert!(iter.valid().unwrap());
+            assert_eq!(iter.key(), &[k]);
+            iter.next().unwrap();
+        }
+    }
+
+    let cf_handle = db.cf_handle("default").unwrap();
+    readopts = ReadOptions::new();
+    readopts.set_titan_key_only(true);
+    iter = db.iter_cf_opt(&cf_handle, readopts);
+    iter.seek(SeekKey::Start).unwrap();
+    for i in 0..n {
+        for j in 0..n {
+            let k = (i * n + j) as u8;
+            let v = vec![k; (j + 1) as usize];
+            assert_eq!(db.get(&[k]).unwrap().unwrap(), &v);
+            assert!(iter.valid().unwrap());
+            assert_eq!(iter.key(), &[k]);
+            iter.next().unwrap();
+        }
+    }
+
+    let num_entries = n as u32 * max_value_size as u32;
+    check_table_properties(&db, num_entries / 2, num_entries);
+}
+
+#[test]
 fn test_titan_sequence_number() {
     let path = tempdir_with_prefix("test_titan_sequence_number");
 
