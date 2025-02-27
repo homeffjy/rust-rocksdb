@@ -27,6 +27,7 @@ jemalloc = ["tikv-jemalloc-sys"]
 portable = ["libtitan_sys/portable"]
 sse = ["libtitan_sys/sse"]
 static_libcpp = []
+cloud = ["libtitan_sys/cloud"]
 
 [build-dependencies]
 cc = "1.0.3"

@@ -201,6 +201,7 @@ fn test_titandb() {
 }
 
 #[test]
+#[cfg(feature = "cloud")]
 fn test_titandb_with_cloud() {
     let max_value_size = 10;
 

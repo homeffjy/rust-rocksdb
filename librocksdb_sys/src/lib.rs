@@ -2892,6 +2892,7 @@ extern "C" {
         err: *mut *mut c_char,
     ) -> *mut DBInstance;
 
+    #[cfg(feature = "cloud")]
     pub fn ctitandb_open_column_families_with_cloud(
         path: *const c_char,
         titan_options: *const DBTitanDBOptions,
@@ -2975,6 +2976,8 @@ extern "C" {
     pub fn ctitandb_options_set_discardable_ratio(opts: *mut DBTitanDBOptions, ratio: f64);
     pub fn ctitandb_options_set_merge_small_file_threshold(opts: *mut DBTitanDBOptions, size: u64);
     pub fn ctitandb_options_set_blob_run_mode(opts: *mut DBTitanDBOptions, t: DBTitanDBBlobRunMode);
+
+    #[cfg(feature = "cloud")]
     pub fn ctitandb_options_create_cloud_environment(
         options: *mut DBTitanDBOptions,
         dbname: *const c_char,
