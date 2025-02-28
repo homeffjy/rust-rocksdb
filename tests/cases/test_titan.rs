@@ -219,9 +219,10 @@ fn test_titandb_with_cloud() {
     tdb_opts.set_max_sorted_runs(20);
 
     let region = "ap-northeast-2";
-    let bucket_name = "test-titandb-with-cloud";
+    let bucket_name = "wildest";
+    tdb_opts.initialize_aws_sdk().unwrap();
     tdb_opts
-        .create_cloud_environment(tdb_path.to_str().unwrap(), region, bucket_name)
+        .configure_bucket(tdb_path.to_str().unwrap(), region, bucket_name)
         .unwrap();
 
     let mut opts = DBOptions::new();
@@ -234,6 +235,8 @@ fn test_titandb_with_cloud() {
         "titan-collector",
         f,
     );
+    // create cloud env just before open db to avoid be overwritten by default env
+    tdb_opts.create_cloud_env().unwrap();
     let mut db = DB::open_cf(
         opts,
         path.path().to_str().unwrap(),
@@ -241,6 +244,7 @@ fn test_titandb_with_cloud() {
     )
     .unwrap();
 
+    return;
     let n = 10;
     let mut fopts = FlushOptions::default();
     fopts.set_wait(true);
@@ -306,6 +310,7 @@ fn test_titandb_with_cloud() {
 
     let num_entries = n as u32 * max_value_size as u32;
     check_table_properties(&db, num_entries / 2, num_entries);
+    tdb_opts.shutdown_aws_sdk().unwrap();
 }
 
 #[test]

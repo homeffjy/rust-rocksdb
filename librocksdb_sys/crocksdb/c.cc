@@ -60,10 +60,10 @@
 #include "table/block_based/block_based_table_factory.h"
 #include "table/sst_file_writer_collectors.h"
 #include "table/table_reader.h"
+#include "titan/blob_cloud.h"
 #include "titan/checkpoint.h"
 #include "titan/db.h"
 #include "titan/options.h"
-#include "titan/blob_cloud.h"
 #include "util/coding.h"
 
 #if !defined(ROCKSDB_MAJOR) || !defined(ROCKSDB_MINOR) || \
@@ -6762,6 +6762,7 @@ crocksdb_t* ctitandb_open_column_families_with_cloud(
                                        column_families, &handles, &db))) {
     return nullptr;
   }
+  return nullptr;
   for (size_t i = 0; i < handles.size(); i++) {
     crocksdb_column_family_handle_t* c_handle =
         new crocksdb_column_family_handle_t;
@@ -6862,14 +6863,26 @@ void ctitandb_options_set_compression_options(ctitandb_options_t* opt,
       zstd_max_train_bytes;
 }
 
-void ctitandb_options_create_cloud_environment(ctitandb_options_t* options,
-                                             const char* dbname,
-                                             const char* region,
-                                             const char* bucket_name,
-                                             char** errptr) {
-  SaveError(errptr, rocksdb::titandb::TitanCloudHelper::CreateCloudEnvironment(
-                        options->rep, std::string(dbname), std::string(region),
-                        std::string(bucket_name)));
+void ctitandb_options_initialize_aws_sdk(ctitandb_options_t* options) {
+  rocksdb::titandb::TitanCloudHelper::InitializeAWS(options->rep);
+}
+
+void ctitandb_options_shutdown_aws_sdk(ctitandb_options_t* options) {
+  rocksdb::titandb::TitanCloudHelper::ShutdownAWS(options->rep);
+}
+
+void ctitandb_options_configure_bucket(ctitandb_options_t* options,
+                                       const char* bucket_name,
+                                       const char* region,
+                                       const char* object_path) {
+  rocksdb::titandb::TitanCloudHelper::ConfigureBucket(options->rep, bucket_name,
+                                                      region, object_path);
+}
+
+void ctitandb_options_create_cloud_env(ctitandb_options_t* options,
+                                       char** errptr) {
+  SaveError(errptr, rocksdb::titandb::TitanCloudHelper::CreateCloudEnv(
+                        options->rep));
 }
 
 unsigned char ctitandb_options_is_cloud_enabled(ctitandb_options_t* options) {

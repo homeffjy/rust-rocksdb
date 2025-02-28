@@ -142,6 +142,14 @@ fn build_rocksdb() -> Build {
     if cfg!(feature = "sse") {
         cfg.define("FORCE_SSE42", "ON");
     }
+    if cfg!(feature = "cloud") {
+        cfg.define("WITH_AWS", "ON");
+        println!("cargo:rustc-link-search=native={}", env::var("DEP_AWSSDK_ROOT").unwrap_or_else(|_| "/usr/local/lib".to_string()));
+        println!("cargo:rustc-link-lib=aws-cpp-sdk-core");
+        println!("cargo:rustc-link-lib=aws-cpp-sdk-s3");
+        println!("cargo:rustc-link-lib=aws-cpp-sdk-transfer");
+        println!("cargo:rustc-link-lib=aws-cpp-sdk-kinesis");
+    }
     // RocksDB cmake script expect libz.a being under ${DEP_Z_ROOT}/lib, but libz-sys crate put it
     // under ${DEP_Z_ROOT}/build. Append the path to CMAKE_PREFIX_PATH to get around it.
     env::set_var("CMAKE_PREFIX_PATH", {

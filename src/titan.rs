@@ -150,7 +150,21 @@ impl TitanDBOptions {
         }
     }
 
-    pub fn create_cloud_environment(
+    pub fn initialize_aws_sdk(&mut self) -> Result<(), String> {
+        unsafe {
+            crocksdb_ffi::ctitandb_options_initialize_aws_sdk(self.inner);
+        }
+        Ok(())
+    }
+
+    pub fn shutdown_aws_sdk(&mut self) -> Result<(), String> {
+        unsafe {
+            crocksdb_ffi::ctitandb_options_shutdown_aws_sdk(self.inner);
+        }
+        Ok(())
+    }
+
+    pub fn configure_bucket(
         &mut self,
         dbname: &str,
         region: &str,
@@ -161,14 +175,25 @@ impl TitanDBOptions {
         let c_bucket = CString::new(bucket_name).unwrap();
 
         unsafe {
-            crocksdb_ffi::ctitandb_options_create_cloud_environment(
+            crocksdb_ffi::ctitandb_options_configure_bucket(
                 self.inner,
-                c_dbname.as_ptr(),
-                c_region.as_ptr(),
                 c_bucket.as_ptr(),
+                c_region.as_ptr(),
+                c_dbname.as_ptr(),
             );
         }
         Ok(())
+    }
+
+    pub fn create_cloud_env(&mut self) -> Result<(), String> {
+        unsafe {
+            ffi_try!(ctitandb_options_create_cloud_env(self.inner));
+        }
+        Ok(())
+    }
+
+    pub fn is_cloud_enabled(&self) -> bool {
+        unsafe { crocksdb_ffi::ctitandb_options_is_cloud_enabled(self.inner) }
     }
 }
 
