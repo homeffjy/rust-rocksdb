@@ -201,7 +201,7 @@ fn test_titandb() {
 }
 
 #[test]
-#[cfg(feature = "cloud")]
+// #[cfg(feature = "cloud")]
 fn test_titandb_with_cloud() {
     let max_value_size = 10;
 
@@ -244,7 +244,6 @@ fn test_titandb_with_cloud() {
     )
     .unwrap();
 
-    return;
     let n = 10;
     let mut fopts = FlushOptions::default();
     fopts.set_wait(true);

@@ -22,7 +22,7 @@ fn main() {
     if cfg!(feature = "sse") {
         cfg.define("FORCE_SSE42", "ON");
     }
-    if cfg!(feature = "cloud") {
+    if cfg!(feature = "aws") {
         cfg.define("WITH_AWS", "ON");
     }
     let dst = cfg

@@ -142,7 +142,7 @@ fn build_rocksdb() -> Build {
     if cfg!(feature = "sse") {
         cfg.define("FORCE_SSE42", "ON");
     }
-    if cfg!(feature = "cloud") {
+    if cfg!(feature = "aws") {
         cfg.define("WITH_AWS", "ON");
         println!("cargo:rustc-link-search=native={}", env::var("DEP_AWSSDK_ROOT").unwrap_or_else(|_| "/usr/local/lib".to_string()));
         println!("cargo:rustc-link-lib=aws-cpp-sdk-core");
