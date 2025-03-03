@@ -201,11 +201,10 @@ fn test_titandb() {
 }
 
 #[test]
-// #[cfg(feature = "cloud")]
 fn test_titandb_with_cloud() {
     let max_value_size = 10;
 
-    let path = tempdir_with_prefix("test_titandb_with_cloud");
+    let path = tempdir_with_prefix("test_titandb");
     let tdb_path = path.path().join("titandb");
     let mut tdb_opts = TitanDBOptions::new();
     tdb_opts.set_dirname(tdb_path.to_str().unwrap());
@@ -226,6 +225,7 @@ fn test_titandb_with_cloud() {
         .unwrap();
 
     let mut opts = DBOptions::new();
+    tdb_opts.create_cloud_env(&mut opts, path.path().to_str().unwrap()).unwrap();
     opts.create_if_missing(true);
     opts.set_titandb_options(&tdb_opts);
     let mut cf_opts = ColumnFamilyOptions::new();
@@ -235,8 +235,9 @@ fn test_titandb_with_cloud() {
         "titan-collector",
         f,
     );
-    // create cloud env just before open db to avoid be overwritten by default env
-    tdb_opts.create_cloud_env().unwrap();
+
+    println!("path: {}", path.path().to_str().unwrap());
+
     let mut db = DB::open_cf(
         opts,
         path.path().to_str().unwrap(),
@@ -309,7 +310,6 @@ fn test_titandb_with_cloud() {
 
     let num_entries = n as u32 * max_value_size as u32;
     check_table_properties(&db, num_entries / 2, num_entries);
-    tdb_opts.shutdown_aws_sdk().unwrap();
 }
 
 #[test]

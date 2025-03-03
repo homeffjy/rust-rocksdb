@@ -17,7 +17,7 @@ use crocksdb_ffi::{
     DBPinnableSlice, DBPostWriteCallback, DBSequentialFile, DBTablePropertiesCollection,
     DBTitanDBOptions, DBWriteBatch,
 };
-use libc::{self, c_char, c_int, c_void, size_t};
+use libc::{self, c_char, c_int, c_void, size_t, sleep};
 use librocksdb_sys::DBMemoryAllocator;
 use metadata::ColumnFamilyMetaData;
 use rocksdb_options::{
@@ -2702,6 +2702,13 @@ impl Env {
                 inner: crocksdb_ffi::crocksdb_mem_env_create(),
                 base: None,
             }
+        }
+    }
+
+    pub fn new_replace_env(env: *mut DBEnv) -> Env {
+        Env {
+            inner: env,
+            base: None,
         }
     }
 

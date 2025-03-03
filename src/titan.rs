@@ -1,5 +1,6 @@
 use std::ffi::{CStr, CString};
 use std::ops::Deref;
+use std::sync::Arc;
 
 use crocksdb_ffi::{self, DBCompressionType, DBTitanBlobIndex, DBTitanDBOptions};
 use librocksdb_sys::{ctitandb_encode_blob_index, DBTitanDBBlobRunMode};
@@ -8,6 +9,8 @@ use std::ops::DerefMut;
 use std::os::raw::{c_char, c_int};
 use std::ptr;
 use std::slice;
+
+use crate::{DBOptions, Env};
 
 pub struct TitanDBOptions {
     pub(crate) inner: *mut DBTitanDBOptions,
@@ -185,11 +188,19 @@ impl TitanDBOptions {
         Ok(())
     }
 
-    pub fn create_cloud_env(&mut self) -> Result<(), String> {
+    pub fn create_cloud_env(&mut self, opts: &mut DBOptions, path: &str) -> Result<(), String> {
         unsafe {
-            ffi_try!(ctitandb_options_create_cloud_env(self.inner));
+            let log_name = CString::new(path).unwrap();
+            let logger = ffi_try!(crocksdb_create_log_from_options(
+                log_name.as_ptr(),
+                opts.inner
+            ));
+            let env = ffi_try!(ctitandb_options_create_cloud_env(self.inner, logger));
+            crocksdb_ffi::crocksdb_options_set_info_log(opts.inner, logger);
+            crocksdb_ffi::crocksdb_log_destroy(logger);
+            opts.set_env(Arc::new(Env::new_replace_env(env)));
+            Ok(())
         }
-        Ok(())
     }
 
     pub fn is_cloud_enabled(&self) -> bool {

@@ -6762,7 +6762,6 @@ crocksdb_t* ctitandb_open_column_families_with_cloud(
                                        column_families, &handles, &db))) {
     return nullptr;
   }
-  return nullptr;
   for (size_t i = 0; i < handles.size(); i++) {
     crocksdb_column_family_handle_t* c_handle =
         new crocksdb_column_family_handle_t;
@@ -6879,10 +6878,16 @@ void ctitandb_options_configure_bucket(ctitandb_options_t* options,
                                                       region, object_path);
 }
 
-void ctitandb_options_create_cloud_env(ctitandb_options_t* options,
-                                       char** errptr) {
-  SaveError(errptr, rocksdb::titandb::TitanCloudHelper::CreateCloudEnv(
-                        options->rep));
+crocksdb_env_t* ctitandb_options_create_cloud_env(ctitandb_options_t* options,
+                                                  crocksdb_logger_t* logger,
+                                                  char** errptr) {
+  crocksdb_env_t* result = new crocksdb_env_t;
+  result->rep = rocksdb::titandb::TitanCloudHelper::CreateCloudEnv(options->rep,
+                                                                   logger->rep);
+  result->block_cipher = nullptr;
+  result->encryption_provider = nullptr;
+  result->is_default = false;
+  return result;
 }
 
 unsigned char ctitandb_options_is_cloud_enabled(ctitandb_options_t* options) {
