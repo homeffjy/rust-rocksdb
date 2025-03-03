@@ -225,7 +225,8 @@ fn test_titandb_with_cloud() {
         .unwrap();
 
     let mut opts = DBOptions::new();
-    tdb_opts.create_cloud_env(&mut opts, path.path().to_str().unwrap()).unwrap();
+    opts.create_info_log(path.path().to_str().unwrap());
+    opts.set_env(tdb_opts.create_cloud_env(opts.get_info_log()).unwrap());
     opts.create_if_missing(true);
     opts.set_titandb_options(&tdb_opts);
     let mut cf_opts = ColumnFamilyOptions::new();

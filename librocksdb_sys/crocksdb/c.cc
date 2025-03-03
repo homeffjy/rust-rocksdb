@@ -2727,12 +2727,16 @@ crocksdb_logger_t* crocksdb_logger_create(void* rep, void (*destructor_)(void*),
   logger->rep = std::shared_ptr<Logger>(li);
   return logger;
 }
-
+ 
 void crocksdb_options_set_info_log(crocksdb_options_t* opt,
                                    crocksdb_logger_t* l) {
   if (l) {
     opt->rep.info_log = l->rep;
   }
+}
+
+crocksdb_logger_t* crocksdb_options_get_info_log(crocksdb_options_t* opt) {
+  return new crocksdb_logger_t{opt->rep.info_log};
 }
 
 void crocksdb_options_set_info_log_level(crocksdb_options_t* opt, uint32_t v) {

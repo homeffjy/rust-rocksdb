@@ -29,6 +29,7 @@ use crocksdb_ffi::{
 };
 use event_listener::{new_event_listener, EventListener};
 use libc::{self, c_double, c_int, c_uchar, c_void, size_t};
+use librocksdb_sys::DBLogger;
 use logger::{new_logger, Logger};
 use merge_operator::MergeFn;
 use merge_operator::{self, full_merge_callback, partial_merge_callback, MergeOperatorCallback};
@@ -1266,6 +1267,10 @@ impl DBOptions {
         unsafe {
             crocksdb_ffi::crocksdb_options_set_info_log(self.inner, logger);
         }
+    }
+
+    pub fn get_info_log(&self) -> *mut DBLogger {
+        unsafe { crocksdb_ffi::crocksdb_options_get_info_log(self.inner) }
     }
 
     pub fn enable_pipelined_write(&self, v: bool) {

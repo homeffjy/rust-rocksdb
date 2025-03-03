@@ -1089,6 +1089,8 @@ extern C_ROCKSDB_LIBRARY_API crocksdb_logger_t* crocksdb_logger_create(
     void* rep, void (*destructor_)(void*), crocksdb_logger_logv_cb logv);
 extern C_ROCKSDB_LIBRARY_API void crocksdb_options_set_info_log(
     crocksdb_options_t*, crocksdb_logger_t*);
+extern C_ROCKSDB_LIBRARY_API crocksdb_logger_t* crocksdb_options_get_info_log(
+    crocksdb_options_t*);
 extern C_ROCKSDB_LIBRARY_API void crocksdb_options_set_info_log_level(
     crocksdb_options_t*, uint32_t);
 extern C_ROCKSDB_LIBRARY_API void crocksdb_options_set_write_buffer_size(

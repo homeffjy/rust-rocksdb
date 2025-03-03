@@ -977,6 +977,7 @@ extern "C" {
         options: *mut Options,
     ) -> *mut DBWriteBufferManager;
     pub fn crocksdb_options_set_info_log(options: *mut Options, logger: *mut DBLogger);
+    pub fn crocksdb_options_get_info_log(options: *mut Options) -> *mut DBLogger;
     pub fn crocksdb_options_get_block_cache_usage(options: *const Options) -> usize;
     pub fn crocksdb_options_set_block_cache_capacity(
         options: *const Options,
