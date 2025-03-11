@@ -221,7 +221,11 @@ fn test_titandb_with_cloud() {
     let bucket_name = "wildest";
     tdb_opts.initialize_aws_sdk().unwrap();
     tdb_opts
-        .configure_bucket(tdb_path.to_str().unwrap(), region, bucket_name)
+        .configure_bucket(tdb_path.to_str().unwrap(), region, bucket_name,
+            None,
+            None,
+            None,
+        )
         .unwrap();
 
     let mut opts = DBOptions::new();

@@ -2984,6 +2984,9 @@ extern "C" {
         bucket_name: *const c_char,
         region: *const c_char,
         object_path: *const c_char,
+        access_key: *const c_char,
+        secret_key: *const c_char,
+        session_token: *const c_char,
     );
     pub fn ctitandb_options_create_cloud_env(
         options: *mut DBTitanDBOptions,

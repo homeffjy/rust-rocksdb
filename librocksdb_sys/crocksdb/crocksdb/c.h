@@ -2742,7 +2742,8 @@ extern C_ROCKSDB_LIBRARY_API void ctitandb_options_shutdown_aws_sdk(
 
 extern C_ROCKSDB_LIBRARY_API void ctitandb_options_configure_bucket(
     ctitandb_options_t* options, const char* bucket_name, const char* region,
-    const char* object_path);
+    const char* object_path, const char* access_key, const char* secret_key,
+    const char* session_token);
 
 extern C_ROCKSDB_LIBRARY_API crocksdb_env_t* ctitandb_options_create_cloud_env(
     ctitandb_options_t* options, crocksdb_logger_t* logger, char** errptr);

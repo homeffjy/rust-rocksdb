@@ -172,10 +172,22 @@ impl TitanDBOptions {
         dbname: &str,
         region: &str,
         bucket_name: &str,
+        access_key: Option<&str>,
+        secret_key: Option<&str>,
+        session_token: Option<&str>,
     ) -> Result<(), String> {
         let c_dbname = CString::new(dbname).unwrap();
         let c_region = CString::new(region).unwrap();
         let c_bucket = CString::new(bucket_name).unwrap();
+        let c_access_key = access_key
+            .map(|s| CString::new(s).unwrap())
+            .unwrap_or_else(|| CString::new("").unwrap());
+        let c_secret_key = secret_key
+            .map(|s| CString::new(s).unwrap())
+            .unwrap_or_else(|| CString::new("").unwrap());
+        let c_session_token = session_token
+            .map(|s| CString::new(s).unwrap())
+            .unwrap_or_else(|| CString::new("").unwrap());
 
         unsafe {
             crocksdb_ffi::ctitandb_options_configure_bucket(
@@ -183,6 +195,9 @@ impl TitanDBOptions {
                 c_bucket.as_ptr(),
                 c_region.as_ptr(),
                 c_dbname.as_ptr(),
+                c_access_key.as_ptr(),
+                c_secret_key.as_ptr(),
+                c_session_token.as_ptr(),
             );
         }
         Ok(())
