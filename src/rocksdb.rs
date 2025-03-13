@@ -804,11 +804,19 @@ impl DB {
         let mut cfs: Vec<String> = vec![];
         unsafe {
             let mut lencf: size_t = 0;
-            let list = ffi_try!(crocksdb_list_column_families(
-                opts.inner,
-                cpath.as_ptr(),
-                &mut lencf
-            ));
+            let list = if opts.titan_inner.is_null() {
+                ffi_try!(crocksdb_list_column_families(
+                    opts.inner,
+                    cpath.as_ptr(),
+                    &mut lencf
+                ))
+            } else {
+                ffi_try!(ctitandb_list_column_families(
+                    opts.titan_inner,
+                    cpath.as_ptr(),
+                    &mut lencf
+                ))
+            };
             let list_cfs = slice::from_raw_parts(list, lencf);
             for &cf_name in list_cfs {
                 let cf = match CStr::from_ptr(cf_name).to_owned().into_string() {

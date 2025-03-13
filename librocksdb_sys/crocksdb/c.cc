@@ -2727,7 +2727,7 @@ crocksdb_logger_t* crocksdb_logger_create(void* rep, void (*destructor_)(void*),
   logger->rep = std::shared_ptr<Logger>(li);
   return logger;
 }
- 
+
 void crocksdb_options_set_info_log(crocksdb_options_t* opt,
                                    crocksdb_logger_t* l) {
   if (l) {
@@ -6777,6 +6777,22 @@ crocksdb_t* ctitandb_open_column_families_with_cloud(
   return result;
 }
 
+char** ctitandb_list_column_families(const ctitandb_options_t* options,
+                                     const char* name, size_t* lencfs,
+                                     char** errptr) {
+  std::vector<std::string> fams;
+  SaveError(errptr, TitanDB::ListColumnFamilies(TitanDBOptions(options->rep),
+                                                std::string(name), &fams));
+
+  *lencfs = fams.size();
+  char** column_families =
+      static_cast<char**>(malloc(sizeof(char*) * fams.size()));
+  for (size_t i = 0; i < fams.size(); i++) {
+    column_families[i] = strdup(fams[i].c_str());
+  }
+  return column_families;
+}
+
 // Caller should make sure `db` is created from ctitandb_open_column_families.
 //
 // TODO: ctitandb_open_column_family should return a ctitandb_t. Caller can
@@ -6874,17 +6890,13 @@ void ctitandb_options_shutdown_aws_sdk(ctitandb_options_t* options) {
   rocksdb::titandb::TitanCloudHelper::ShutdownAWS(options->rep);
 }
 
-void ctitandb_options_configure_bucket(ctitandb_options_t* options,
-                                       const char* bucket_name,
-                                       const char* region,
-                                       const char* object_path,
-                                       const char* access_key,
-                                       const char* secret_key,
-                                       const char* session_token) {
-  rocksdb::titandb::TitanCloudHelper::ConfigureBucket(options->rep, bucket_name,
-                                                      region, object_path,
-                                                      access_key, secret_key,
-                                                      session_token);
+void ctitandb_options_configure_bucket(
+    ctitandb_options_t* options, const char* bucket_name, const char* region,
+    const char* object_path, const char* access_key, const char* secret_key,
+    const char* session_token) {
+  rocksdb::titandb::TitanCloudHelper::ConfigureBucket(
+      options->rep, bucket_name, region, object_path, access_key, secret_key,
+      session_token);
 }
 
 crocksdb_env_t* ctitandb_options_create_cloud_env(ctitandb_options_t* options,

@@ -2903,6 +2903,13 @@ extern "C" {
         err: *mut *mut c_char,
     ) -> *mut DBInstance;
 
+    pub fn ctitandb_list_column_families(
+        options: *const DBTitanDBOptions,
+        name: *const c_char,
+        lencf: *mut size_t,
+        err: *mut *mut c_char,
+    ) -> *mut *mut c_char;
+
     pub fn ctitandb_create_column_family(
         db: *mut DBInstance,
         titan_column_family_options: *const DBTitanDBOptions,

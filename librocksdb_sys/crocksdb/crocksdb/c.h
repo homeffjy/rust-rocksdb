@@ -2679,6 +2679,10 @@ ctitandb_open_column_families_with_cloud(
     const ctitandb_options_t** titan_column_family_options,
     crocksdb_column_family_handle_t** column_family_handles, char** errptr);
 
+extern C_ROCKSDB_LIBRARY_API char** ctitandb_list_column_families(
+    const ctitandb_options_t* options, const char* name, size_t* lencfs,
+    char** errptr);
+
 extern C_ROCKSDB_LIBRARY_API crocksdb_column_family_handle_t*
 ctitandb_create_column_family(
     crocksdb_t* db, const ctitandb_options_t* titan_column_family_options,
