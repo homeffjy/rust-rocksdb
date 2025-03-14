@@ -811,6 +811,7 @@ impl DB {
                     &mut lencf
                 ))
             } else {
+                crocksdb_ffi::ctitandb_options_set_rocksdb_options(opts.titan_inner, opts.inner);
                 ffi_try!(ctitandb_list_column_families(
                     opts.titan_inner,
                     cpath.as_ptr(),
