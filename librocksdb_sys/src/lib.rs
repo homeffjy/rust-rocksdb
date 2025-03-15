@@ -2997,7 +2997,7 @@ extern "C" {
     );
     pub fn ctitandb_options_create_cloud_env(
         options: *mut DBTitanDBOptions,
-        logger: *mut DBLogger,
+        base_env: *mut DBEnv,
         errptr: *mut *mut c_char,
     ) -> *mut DBEnv;
     pub fn ctitandb_options_is_cloud_enabled(options: *mut DBTitanDBOptions) -> bool;

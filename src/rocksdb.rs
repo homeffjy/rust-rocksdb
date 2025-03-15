@@ -17,7 +17,7 @@ use crocksdb_ffi::{
     DBPinnableSlice, DBPostWriteCallback, DBSequentialFile, DBTablePropertiesCollection,
     DBTitanDBOptions, DBWriteBatch,
 };
-use libc::{self, c_char, c_int, c_void, size_t, sleep};
+use libc::{self, c_char, c_int, c_void, size_t};
 use librocksdb_sys::DBMemoryAllocator;
 use metadata::ColumnFamilyMetaData;
 use rocksdb_options::{
@@ -2714,11 +2714,26 @@ impl Env {
         }
     }
 
-    pub fn new_replace_env(env: *mut DBEnv) -> Env {
-        Env {
-            inner: env,
-            base: None,
+    pub fn new_titan_cloud_env(
+        base_env: Arc<Env>,
+        options: &TitanDBOptions,
+    ) -> Result<Env, String> {
+        let env = unsafe {
+            crocksdb_ffi::ctitandb_options_create_cloud_env(
+                options.inner,
+                base_env.inner,
+                std::ptr::null_mut(),
+            )
+        };
+
+        if env.is_null() {
+            return Err("Failed to create Titan Cloud environment".to_string());
         }
+
+        Ok(Env {
+            inner: env,
+            base: Some(base_env),
+        })
     }
 
     // Create a ctr encrypted env with a given base env and a given ciper text.

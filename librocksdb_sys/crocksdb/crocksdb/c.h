@@ -2750,7 +2750,7 @@ extern C_ROCKSDB_LIBRARY_API void ctitandb_options_configure_bucket(
     const char* session_token);
 
 extern C_ROCKSDB_LIBRARY_API crocksdb_env_t* ctitandb_options_create_cloud_env(
-    ctitandb_options_t* options, crocksdb_logger_t* logger, char** errptr);
+    ctitandb_options_t* options, crocksdb_env_t* base_env, char** errptr);
 
 extern C_ROCKSDB_LIBRARY_API unsigned char ctitandb_options_is_cloud_enabled(
     ctitandb_options_t* options);

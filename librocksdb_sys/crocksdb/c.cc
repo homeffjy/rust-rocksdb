@@ -6900,11 +6900,11 @@ void ctitandb_options_configure_bucket(
 }
 
 crocksdb_env_t* ctitandb_options_create_cloud_env(ctitandb_options_t* options,
-                                                  crocksdb_logger_t* logger,
+                                                  crocksdb_env_t* base_env,
                                                   char** errptr) {
   crocksdb_env_t* result = new crocksdb_env_t;
-  result->rep = rocksdb::titandb::TitanCloudHelper::CreateCloudEnv(options->rep,
-                                                                   logger->rep);
+  result->rep = rocksdb::titandb::TitanCloudHelper::CreateCloudEnv(
+      options->rep, base_env->rep);
   result->block_cipher = nullptr;
   result->encryption_provider = nullptr;
   result->is_default = false;

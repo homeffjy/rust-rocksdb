@@ -1,16 +1,12 @@
 use std::ffi::{CStr, CString};
 use std::ops::Deref;
-use std::sync::Arc;
 
 use crocksdb_ffi::{self, DBCompressionType, DBTitanBlobIndex, DBTitanDBOptions};
-use librocksdb_sys::{ctitandb_encode_blob_index, DBLogger, DBTitanDBBlobRunMode};
+use librocksdb_sys::{ctitandb_encode_blob_index, DBTitanDBBlobRunMode};
 use rocksdb::Cache;
 use std::ops::DerefMut;
-use std::os::raw::{c_char, c_int};
 use std::ptr;
 use std::slice;
-
-use crate::{DBOptions, Env};
 
 pub struct TitanDBOptions {
     pub(crate) inner: *mut DBTitanDBOptions,
@@ -201,13 +197,6 @@ impl TitanDBOptions {
             );
         }
         Ok(())
-    }
-
-    pub fn create_cloud_env(&mut self, logger: *mut DBLogger) -> Result<Arc<Env>, String> {
-        unsafe {
-            let env = ffi_try!(ctitandb_options_create_cloud_env(self.inner, logger));
-            Ok(Arc::new(Env::new_replace_env(env)))
-        }
     }
 
     pub fn is_cloud_enabled(&self) -> bool {

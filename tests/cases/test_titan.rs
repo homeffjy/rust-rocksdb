@@ -11,14 +11,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::collections::HashMap;
 use std::ops;
+use std::{collections::HashMap, sync::Arc};
 
 use rand::Rng;
 use rocksdb::{
     CFHandle, Cache, ColumnFamilyOptions, CompactOptions, DBBottommostLevelCompaction,
     DBCompressionType, DBEntryType, DBOptions, DBStatisticsHistogramType as HistogramType,
-    DBStatisticsTickerType as TickerType, FlushOptions, LRUCacheOptions, Range, ReadOptions,
+    DBStatisticsTickerType as TickerType, Env, FlushOptions, LRUCacheOptions, Range, ReadOptions,
     SeekKey, Statistics, TablePropertiesCollector, TablePropertiesCollectorFactory, TitanBlobIndex,
     TitanDBOptions, UserCollectedProperties, Writable, WriteOptions, DB,
 };
@@ -221,7 +221,10 @@ fn test_titandb_with_cloud() {
     let bucket_name = "wildest";
     tdb_opts.initialize_aws_sdk().unwrap();
     tdb_opts
-        .configure_bucket(tdb_path.to_str().unwrap(), region, bucket_name,
+        .configure_bucket(
+            tdb_path.to_str().unwrap(),
+            region,
+            bucket_name,
             None,
             None,
             None,
@@ -229,8 +232,9 @@ fn test_titandb_with_cloud() {
         .unwrap();
 
     let mut opts = DBOptions::new();
-    opts.create_info_log(path.path().to_str().unwrap());
-    opts.set_env(tdb_opts.create_cloud_env(opts.get_info_log()).unwrap());
+    opts.create_info_log(path.path().to_str().unwrap()).unwrap();
+    let env = Env::new_titan_cloud_env(Arc::new(Env::new_mem()), &tdb_opts).unwrap();
+    opts.set_env(Arc::new(env));
     opts.create_if_missing(true);
     opts.set_titandb_options(&tdb_opts);
     let mut cf_opts = ColumnFamilyOptions::new();
