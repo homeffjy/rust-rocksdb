@@ -6823,6 +6823,17 @@ ctitandb_options_t* ctitandb_options_copy(ctitandb_options_t* src) {
   return new ctitandb_options_t{src->rep};
 }
 
+void ctitandb_options_set_info_log(ctitandb_options_t* opt,
+                                   crocksdb_logger_t* l) {
+  if (l) {
+    opt->rep.info_log = l->rep;
+  }
+}
+
+crocksdb_logger_t* ctitandb_options_get_info_log(ctitandb_options_t* opt) {
+  return new crocksdb_logger_t{opt->rep.info_log};
+}
+
 void ctitandb_options_set_rocksdb_options(
     ctitandb_options_t* opts, const crocksdb_options_t* rocksdb_opts) {
   *(DBOptions*)&opts->rep = rocksdb_opts->rep;

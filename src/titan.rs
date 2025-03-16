@@ -2,7 +2,7 @@ use std::ffi::{CStr, CString};
 use std::ops::Deref;
 
 use crocksdb_ffi::{self, DBCompressionType, DBTitanBlobIndex, DBTitanDBOptions};
-use librocksdb_sys::{ctitandb_encode_blob_index, DBTitanDBBlobRunMode};
+use librocksdb_sys::{ctitandb_encode_blob_index, DBLogger, DBTitanDBBlobRunMode};
 use rocksdb::Cache;
 use std::ops::DerefMut;
 use std::ptr;
@@ -201,6 +201,16 @@ impl TitanDBOptions {
 
     pub fn is_cloud_enabled(&self) -> bool {
         unsafe { crocksdb_ffi::ctitandb_options_is_cloud_enabled(self.inner) }
+    }
+
+    pub fn set_info_log(&mut self, l: *mut DBLogger) {
+        unsafe {
+            crocksdb_ffi::ctitandb_options_set_info_log(self.inner, l);
+        }
+    }
+
+    pub fn get_info_log(&self) -> *mut DBLogger {
+        unsafe { crocksdb_ffi::ctitandb_options_get_info_log(self.inner) }
     }
 }
 

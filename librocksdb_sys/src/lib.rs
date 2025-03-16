@@ -2919,6 +2919,8 @@ extern "C" {
 
     pub fn ctitandb_options_create() -> *mut DBTitanDBOptions;
     pub fn ctitandb_options_destroy(opts: *mut DBTitanDBOptions);
+    pub fn ctitandb_options_set_info_log(opts: *mut DBTitanDBOptions, l: *mut DBLogger);
+    pub fn ctitandb_options_get_info_log(opts: *mut DBTitanDBOptions) -> *mut DBLogger;
     pub fn ctitandb_options_copy(opts: *mut DBTitanDBOptions) -> *mut DBTitanDBOptions;
     pub fn ctitandb_options_set_rocksdb_options(
         opts: *mut DBTitanDBOptions,

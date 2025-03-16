@@ -2708,6 +2708,12 @@ extern C_ROCKSDB_LIBRARY_API void ctitandb_options_destroy(ctitandb_options_t*);
 extern C_ROCKSDB_LIBRARY_API ctitandb_options_t* ctitandb_options_copy(
     ctitandb_options_t*);
 
+extern C_ROCKSDB_LIBRARY_API void ctitandb_options_set_info_log(
+    ctitandb_options_t* opt, crocksdb_logger_t* l);
+
+extern C_ROCKSDB_LIBRARY_API crocksdb_logger_t* ctitandb_options_get_info_log(
+    ctitandb_options_t* opt);
+
 extern C_ROCKSDB_LIBRARY_API void ctitandb_options_set_rocksdb_options(
     ctitandb_options_t* opts, const crocksdb_options_t* rocksdb_opts);
 

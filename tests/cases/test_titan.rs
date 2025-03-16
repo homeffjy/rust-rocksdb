@@ -233,6 +233,7 @@ fn test_titandb_with_cloud() {
 
     let mut opts = DBOptions::new();
     opts.create_info_log(path.path().to_str().unwrap()).unwrap();
+    tdb_opts.set_info_log(opts.get_info_log());
     let env = Env::new_titan_cloud_env(Arc::new(Env::new_mem()), &tdb_opts).unwrap();
     opts.set_env(Arc::new(env));
     opts.create_if_missing(true);
